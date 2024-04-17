@@ -26,36 +26,36 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 func Get(w http.ResponseWriter, r *http.Request) {
 
 	// Create response object
-	response := APIResponse{Message: "done"}
+	response := APIResponse{Status: true}
 
 	// Convert response object to JSON
 	responseJSON, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		responseJSON, _ := json.Marshal(APIResponse{Status: false, Message: err.Error()})
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(responseJSON)
 		return
 	}
 
-	// Kirim respons
+	// send respons
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(responseJSON)
 }
 
 func PostJson(w http.ResponseWriter, r *http.Request) {
-	// Baca data dari badan permintaan (request body)
-	var postData PostData
-	err := json.NewDecoder(r.Body).Decode(&postData)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+
+	type PostData struct {
+		Message string `json:"message"`
 	}
 
-	// Lakukan sesuatu dengan data yang diterima
-	// Misalnya, cetak pesan ke konsol
-	// println("Received message:", postData.Message)
+	var postData PostData
 
-	// Kirim respons
+	json.NewDecoder(r.Body).Decode(&postData)
+	responseJSON, _ := json.Marshal(APIResponse{Status: true, Message: postData.Message})
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(postData)
+	w.Write(responseJSON)
+
 }
 
 func PostForm(w http.ResponseWriter, r *http.Request) {
@@ -70,16 +70,19 @@ func PostForm(w http.ResponseWriter, r *http.Request) {
 	message := r.FormValue("message")
 
 	// Create response object
-	response := APIResponse{Message: message}
+	response := APIResponse{Status: true, Message: message}
 
 	// Convert response object to JSON
 	responseJSON, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		responseJSON, _ := json.Marshal(APIResponse{Status: false, Message: err.Error()})
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(responseJSON)
+		// http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Kirim respons
+	// send respons
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(responseJSON)
 }

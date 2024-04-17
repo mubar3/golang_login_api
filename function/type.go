@@ -1,9 +1,6 @@
 package Controller
 
 type APIResponse struct {
-	Message string `json:"message"`
-}
-
-type PostData struct {
+	Status  bool   `json:"status"`
 	Message string `json:"message"`
 }
