@@ -21,6 +21,7 @@ func main() {
 	r.HandleFunc("/get", Controller.Get)
 	r.HandleFunc("/post_json", Controller.PostJson)
 	r.HandleFunc("/post_form", Controller.PostForm)
+	r.HandleFunc("/login", Controller.Login)
 
 	// Menjalankan server dengan menggunakan router Gorilla Mux
 	godotenv.Load(".env")
