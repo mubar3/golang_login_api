@@ -2,7 +2,7 @@ package Controller
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 
@@ -80,7 +80,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// check form
 	err := r.ParseForm()
 	if err != nil {
-		responseJSON, _ := json.Marshal(APIResponse{Status: false, Message: "form eror:" + err.Error()})
+		responseJSON, _ := json.Marshal(APIResponse{Status: false, Message: "Form eror:" + err.Error()})
 		w.Write(responseJSON)
 		return
 	}
@@ -98,7 +98,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer file.Close()
-	byteValue, _ := ioutil.ReadAll(file)
+	byteValue, _ := io.ReadAll(file)
 	var data []Data
 	err = json.Unmarshal(byteValue, &data)
 	if err != nil {
