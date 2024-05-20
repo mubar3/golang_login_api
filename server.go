@@ -6,12 +6,15 @@ import (
 	"os"
 
 	Controller "golang_api_login/function"
+	Model "golang_api_login/model"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	// init db
+	Model.Init()
 
 	// routes
 	r := mux.NewRouter()
@@ -21,7 +24,8 @@ func main() {
 	r.HandleFunc("/get", Controller.Get)
 	r.HandleFunc("/post_json", Controller.PostJson)
 	r.HandleFunc("/post_form", Controller.PostForm)
-	r.HandleFunc("/login", Controller.Login)
+	r.HandleFunc("/login_file", Controller.Login_file)
+	r.HandleFunc("/login_db", Controller.Login_db)
 
 	// Menjalankan server dengan menggunakan router Gorilla Mux
 	godotenv.Load(".env")

@@ -2,6 +2,7 @@ package Controller
 
 import (
 	"encoding/json"
+	Model "golang_api_login/model"
 	"io"
 	"net/http"
 	"os"
@@ -73,7 +74,7 @@ func PostForm(w http.ResponseWriter, r *http.Request) {
 	w.Write(responseJSON)
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func Login_file(w http.ResponseWriter, r *http.Request) {
 	// type output
 	w.Header().Set("Content-Type", "application/json")
 
@@ -143,5 +144,27 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		responseJSON, _ := json.Marshal(APIResponse{Status: false, Message: "login failed, unknown user"})
 		w.Write(responseJSON)
 	}
+}
 
+func Login_db(w http.ResponseWriter, r *http.Request) {
+	// type output
+	w.Header().Set("Content-Type", "application/json")
+
+	// check form
+	err := r.ParseForm()
+	if err != nil {
+		responseJSON, _ := json.Marshal(APIResponse{Status: false, Message: "Form eror:" + err.Error()})
+		w.Write(responseJSON)
+		return
+	}
+
+	// cek user db
+	exists := Model.IsUsernameExists(r.FormValue("user"), r.FormValue("password"))
+	if exists {
+		responseJSON, _ := json.Marshal(APIResponse{Status: true, Message: "login done"})
+		w.Write(responseJSON)
+	} else {
+		responseJSON, _ := json.Marshal(APIResponse{Status: false, Message: "login failed, unknown user"})
+		w.Write(responseJSON)
+	}
 }
