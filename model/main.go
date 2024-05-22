@@ -3,7 +3,9 @@ package Model
 import (
 	"database/sql"
 	"fmt"
+	Package "golang_api_login/package"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -18,15 +20,15 @@ func Init() {
 	godotenv.Load(envFileLocation)
 
 	// Inisialisasi koneksi database
-	// dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
-	// 	os.Getenv("DB_USER"),
-	// 	os.Getenv("DB_PASSWORD"),
-	// 	os.Getenv("DB_HOST"),
-	// 	os.Getenv("DB_PORT"),
-	// 	os.Getenv("DB_NAME"),
-	// )
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
 
-	dsn := fmt.Sprintf("root:@tcp(localhost:3306)/golang_login_api")
+	// dsn := fmt.Sprintf("root:@tcp(localhost:3306)/golang_login_api")
 
 	var err error
 	DB, err = sql.Open("mysql", dsn)
@@ -47,9 +49,12 @@ func Init() {
 }
 
 func IsUsernameExists(username string, password string) bool {
-	var count int
 
-	row := DB.QueryRow("SELECT COUNT(*) FROM user WHERE username=? and pass=?", username, password)
+	var keyz string
+	DB.QueryRow("SELECT keyz FROM user WHERE username=?", username).Scan(&keyz)
+
+	var count int
+	row := DB.QueryRow("SELECT COUNT(*) FROM user WHERE username=? and pass=?", username, Package.EncryptHash(password, keyz))
 	err := row.Scan(&count)
 	if err != nil {
 		log.Println("Error checking username:", err)

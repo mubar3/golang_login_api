@@ -3,6 +3,8 @@ package Controller
 import (
 	"encoding/json"
 	Model "golang_api_login/model"
+	Package "golang_api_login/package"
+
 	"io"
 	"net/http"
 	"os"
@@ -150,10 +152,21 @@ func Login_db(w http.ResponseWriter, r *http.Request) {
 	// type output
 	w.Header().Set("Content-Type", "application/json")
 
-	// check form
-	err := r.ParseForm()
-	if err != nil {
-		responseJSON, _ := json.Marshal(APIResponse{Status: false, Message: "Form eror:" + err.Error()})
+	// Pastikan metode request adalah POST
+	if r.Method != http.MethodPost {
+		responseJSON, _ := json.Marshal(APIResponse{Status: false, Message: "Invalid request method"})
+		w.Write(responseJSON)
+		return
+	}
+
+	// validasi form
+	r.ParseForm()
+	validasi, err := Package.Validasi(r.Form, map[string]string{
+		"user":     "required",
+		"password": "required",
+	})
+	if !validasi {
+		responseJSON, _ := json.Marshal(APIResponse{Status: false, Message: err.Error()})
 		w.Write(responseJSON)
 		return
 	}
